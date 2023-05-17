@@ -2,15 +2,28 @@ from tkinter import *
 import random
 import sqlite3
 import tkinter.messagebox as messagebox
+from tkinter import filedialog
+import pyperclip
+from openpyxl import load_workbook
 
 main_page = Tk()
 main_page.title("صفحه اصلی")
 main_page.resizable = False
-main_page.geometry("800x500")
+main_page.geometry("750x300")
 back = "#F08080"
 main_page.config(bg=back)
 fram_del = Frame(main_page, bg="red")
 fram_del.pack()
+
+
+def open_excel_file():
+    global matn
+    file_path = filedialog.askopenfile(filetypes=[("Txt Files", "*.txt")])
+    if file_path:
+      with open(file_path, 'w') as file:
+         file.write(matn)
+
+
 
 # creat Data base
 # con=sqlite3.connect("user")
@@ -42,10 +55,10 @@ def Run():
         if character in valid_characters and (len(entry_count_pass.get()) != 0):
             label_info.config(text=email_address, bg="red")
             label_us_pass.config(bg="red", text=f"user: {user_name}.\npassword: {p}")
-        elif (len(entry_count_pass.get()) == 0):
+        elif character in valid_characters and (len(entry_count_pass.get()) == 0):
             print("no")
-        #        messagebox.showinfo("Warning", 'Please enter a password length')
-        # elif character not in valid_characters :
+            messagebox.showinfo("Warning", 'Please enter a password length')
+        # elif character not in valid_characters or (len(entry_count_pass.get()) == 0) :
         #     print("yes")
         #     label_info.config(text=f"Your email should contain {valid_characters}.\nPlease enter your email address again.")
 
@@ -60,8 +73,7 @@ def search():
         field1_value = x[0]
         field2_value = x[1]
         field3_value = x[2]
-        label_info.config(text=f"username: {field1_value}\npass: {field3_value}",bg="yellow")
-        print(field1_value, field2_value, field3_value)
+        label_info.config(text=f"username: {field1_value}\npass: {field3_value}", bg="yellow")
     if exist:
         messagebox.showinfo("Erorr", "کاربری با این ایمیل وجود دارد")
         con.commit()
@@ -69,8 +81,8 @@ def search():
         entry_email.delete(0, END)
     if not exist:
         messagebox.showinfo("info", "این ایمیل برای ثبت نام معتبر می باشد")
-        label_info.config(text="",bg=back)
-        label_us_pass.config(text="",bg=back)
+        label_info.config(text="", bg=back)
+        label_us_pass.config(text="", bg=back)
 
 
 def Insert():
@@ -89,6 +101,12 @@ def Insert():
     entry_count_pass.delete(0, END)
     label_info.config(text="", bg=back)
     label_us_pass.config(text="", bg=back)
+
+
+def copy():
+    global p,matn
+    matn=str(pyperclip.copy(p))
+    messagebox.showinfo("copy", "پسورد شما کپی شد")
 
 
 # design_label_caption
@@ -122,10 +140,14 @@ Button_run = Button(frame_insert, text="Run", bg="#C70039", command=Run)
 Button_run.place(relx=0.30, rely=0.30)
 # design_insert_Button
 Button_insert = Button(frame_insert, text="Insert", bg="#C70039", command=Insert)
-Button_insert.place(relx=0.45, rely=0.30)
+Button_insert.place(relx=0.46, rely=0.30)
+# design_copy_Button
+Button_copy = Button(frame_insert, text="copy", bg="#C70039", command=copy)
+Button_copy.place(relx=0.57, rely=0.30)
+# design_open_Button
+Button_copy = Button(frame_insert, text="open file", bg="#C70039", command=open_excel_file)
+Button_copy.place(relx=0.67, rely=0.30)
 
-
-# design_delet_Button
 
 def delete():
     global entry_count_dele
