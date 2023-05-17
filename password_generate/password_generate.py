@@ -96,15 +96,22 @@ Button_insert.place(relx=0.45, rely=0.30)
 # design_delet_Button
 
 def delete():
-    email_del = entry_count_dele.get()
+    global entry_count_dele
+    dele_email = entry_count_dele.get()
     con = sqlite3.connect("user")
     c = con.cursor()
-    sql = '''DELETE FROM user WHERE email=?'''
-    c.execute(sql, (email_del,))
-    con.commit()
-    con.close()
-    messagebox.showinfo("Warning", 'کابر مورد نظر حذف شد')
-    entry_count_dele=""
+    c.execute("SELECT * FROM user WHERE email=?", (dele_email,))
+    exist = c.fetchall()
+    if not exist:
+        messagebox.showinfo("Erorr","کاربری با این ایمل وجود ندارد")
+    else:    
+        sql = '''DELETE FROM user WHERE email=?'''
+        c.execute(sql, (dele_email,))
+
+        con.commit()
+        con.close()
+        messagebox.showinfo("Warning", 'کابر مورد نظر حذف شد')
+        entry_count_dele.delete(0,END)
 Button_delet = Button(frame_delet, text="Delete", bg=back, command=delete)
 Button_delet.place(relx=0.55, rely=0.30)
 # design_Exit_Button
