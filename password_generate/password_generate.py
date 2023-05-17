@@ -54,8 +54,14 @@ def search():
     s = entry_email.get()
     con = sqlite3.connect("user")
     c = con.cursor()
-    c.execute("SELECT * FROM user WHERE email=?", (s,))
+    c.execute("SELECT user_name,email,pass FROM user WHERE email=?", (s,))
     exist = c.fetchall()
+    for x in exist:
+        field1_value = x[0]
+        field2_value = x[1]
+        field3_value = x[2]
+        label_info.config(text=f"username: {field1_value}\npass: {field3_value}",bg="yellow")
+        print(field1_value, field2_value, field3_value)
     if exist:
         messagebox.showinfo("Erorr", "کاربری با این ایمیل وجود دارد")
         con.commit()
@@ -63,6 +69,8 @@ def search():
         entry_email.delete(0, END)
     if not exist:
         messagebox.showinfo("info", "این ایمیل برای ثبت نام معتبر می باشد")
+        label_info.config(text="",bg=back)
+        label_us_pass.config(text="",bg=back)
 
 
 def Insert():
