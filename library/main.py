@@ -12,6 +12,8 @@ main_page=Tk()
 main_page.title="صفحه ورود"
 main_page.geometry("500x500")
 main_page.config(bg="white")
+def login():
+    os.system("page_asli.py")
 #def username label And Entry
 username_l=Label(main_page,text="نام کاربری",font=("Tahoma",12),pady=10,bg="white")
 username_l.place(relx=0.20,rely=0.35)
@@ -23,7 +25,7 @@ userpass_l.place(relx=0.20,rely=0.42)
 userpass_E=Entry(main_page)
 userpass_E.place(relx=0.35,rely=0.45)
 #def Button Login
-login_b=Button(main_page,text="ورود",padx=10)
+login_b=Button(main_page,text="ورود",padx=10,command=login)
 login_b.place(relx=0.45,rely=0.55)
 #def Button sabt_karabar
 add_karabar=Button(main_page,text="ثبت کاربر",padx=10)
