@@ -26,13 +26,29 @@ Lb1 = ttk.Combobox(
 
 )
 def add_ketab():
-
-
-
     book_name = entry_name_ketab.get()
     name_Autor = entry_name_Autor.get()
     cat_book = Lb1.get()
     shabak_book =entry_shabak_ketab.get()
+    if (
+            len(book_name) == 0
+            or len(name_Autor) == 0
+            or len(cat_book) == 0
+            or len(shabak_book) == 0
+    ):
+        messagebox.showinfo("warning", "هیچ فیلدی نباید خالی باشد")
+        return 0
+    if len(shabak_book) != 13 or not isinstance(shabak_book, int) :
+        entry_shabak_ketab.delete(0, END)
+        messagebox.showinfo("warning", "شابک باید یک عدد سیزده رقمی باشد")
+        return 0
+    # if not isinstance(shabak_book, int) :
+    #     #shabak_book.delete(0, END)
+    #     messagebox.showinfo("warning", "َشابک باید رقم باشد")
+    #     return 0
+
+
+
     con = sqlite3.connect('sabte_book')
     c = con.cursor()
     c.execute("SELECT * FROM sabte_book WHERE shabak=?", (shabak_book,))
