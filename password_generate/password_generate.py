@@ -20,20 +20,27 @@ def open_excel_file():
     global matn
     file_path = filedialog.askopenfile(filetypes=[("Txt Files", "*.txt")])
     if file_path:
-      with open(file_path, 'w') as file:
-         file.write(matn)
-
+        with open(file_path, "w") as file:
+            file.write(matn)
 
 
 # creat Data base
-# con=sqlite3.connect("user")
-# c=con.cursor()
-# c.execute("""CREATE TABLE user(user_name text  NOT NULL ,email text PRIMARY KEY,pass text NOT NULL)""")
-# con.commit()
-# con.close()
+try:
+    con = sqlite3.connect("user")
+    c = con.cursor()
+    c.execute(
+        """CREATE TABLE user(user_name text  NOT NULL ,email text PRIMARY KEY,pass text NOT NULL)"""
+    )
+    con.commit()
+    con.close()
+except:
+    pass
 
 frame_insert = Frame(main_page, bg=back)
-frame_insert.config(width=400, height=500, )
+frame_insert.config(
+    width=400,
+    height=500,
+)
 frame_insert.pack(side=LEFT)
 frame_delet = Frame(main_page, bg="#C70039")
 frame_delet.config(width=400, height=500)
@@ -42,29 +49,38 @@ frame_delet.pack(side=RIGHT)
 
 def Run():
     global user_name, email_address, p
-
-    s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
-    email_address = (entry_email.get().strip())
+    email_address = entry_email.get().strip()
     pass_len = entry_count_pass.get()
-    pass1 = int(pass_len)
-    p = "".join(random.sample(s, pass1))
-    user_name = email_address[:email_address.index("@")]
-    valid_characters = {'@', '.', '_'}
-
-    for character in email_address:
-        if character in valid_characters and (len(entry_count_pass.get()) != 0):
-            label_info.config(text=email_address, bg="red")
-            label_us_pass.config(bg="red", text=f"user: {user_name}.\npassword: {p}")
-        elif character in valid_characters and (len(entry_count_pass.get()) == 0):
-            print("no")
-            messagebox.showinfo("Warning", 'Please enter a password length')
-        # elif character not in valid_characters or (len(entry_count_pass.get()) == 0) :
-        #     print("yes")
-        #     label_info.config(text=f"Your email should contain {valid_characters}.\nPlease enter your email address again.")
+    if (
+        pass_len != ""
+        and email_address != ""
+        and "@" in email_address
+        and "." in email_address
+    ):
+        s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()?"
+        pass1 = int(pass_len)
+        valid_characters = {"@", ".", "_"}
+        for character in email_address:
+            if character in valid_characters:
+                p = "".join(random.sample(s, pass1))
+                user_name = email_address.split("@")[1]
+                label_info.config(text=email_address, bg="red")
+                label_us_pass.config(
+                    bg="red", text=f"user: {user_name}.\npassword: {p}"
+                )
+    else:
+        messagebox.showinfo("Warning", "Please enter all the required information")
 
 
 def search():
     s = entry_email.get()
+    if s == "":
+        messagebox.showinfo("Warning", "Please enter an email to search for")
+        return False
+    elif "@" not in s or "." not in s:
+        print(s)
+        messagebox.showinfo("Warning", "لطفا ایمیل را به درستی وارد نمایید")
+        return False
     con = sqlite3.connect("user")
     c = con.cursor()
     c.execute("SELECT user_name,email,pass FROM user WHERE email=?", (s,))
@@ -73,30 +89,36 @@ def search():
         field1_value = x[0]
         field2_value = x[1]
         field3_value = x[2]
-        label_info.config(text=f"username: {field1_value}\npass: {field3_value}", bg="yellow")
+        label_info.config(
+            text=f"username: {field1_value}\npass: {field3_value}", bg="yellow"
+        )
     if exist:
         messagebox.showinfo("Erorr", "کاربری با این ایمیل وجود دارد")
         con.commit()
         con.close()
         entry_email.delete(0, END)
+        return True
     if not exist:
         messagebox.showinfo("info", "این ایمیل برای ثبت نام معتبر می باشد")
         label_info.config(text="", bg=back)
         label_us_pass.config(text="", bg=back)
+        return False
 
 
 def Insert():
     con = sqlite3.connect("user")
     c = con.cursor()
-    c.execute('INSERT INTO user values(:Username,:USERemail,:Userpassword)',
-              {'Username': user_name,
-               'USERemail': email_address,
-               'Userpassword': p,
-
-               })
+    c.execute(
+        "INSERT INTO user values(:Username,:USERemail,:Userpassword)",
+        {
+            "Username": user_name,
+            "USERemail": email_address,
+            "Userpassword": p,
+        },
+    )
     con.commit()
     con.close()
-    messagebox.showinfo("Warning", 'کابر جدید ثبت شد')
+    messagebox.showinfo("Warning", "کابر جدید ثبت شد")
     entry_email.delete(0, END)
     entry_count_pass.delete(0, END)
     label_info.config(text="", bg=back)
@@ -104,8 +126,8 @@ def Insert():
 
 
 def copy():
-    global p,matn
-    matn=str(pyperclip.copy(p))
+    global p, matn
+    matn = str(pyperclip.copy(p))
     messagebox.showinfo("copy", "پسورد شما کپی شد")
 
 
@@ -145,7 +167,9 @@ Button_insert.place(relx=0.46, rely=0.30)
 Button_copy = Button(frame_insert, text="copy", bg="#C70039", command=copy)
 Button_copy.place(relx=0.57, rely=0.30)
 # design_open_Button
-Button_copy = Button(frame_insert, text="open file", bg="#C70039", command=open_excel_file)
+Button_copy = Button(
+    frame_insert, text="open file", bg="#C70039", command=open_excel_file
+)
 Button_copy.place(relx=0.67, rely=0.30)
 
 
@@ -159,12 +183,12 @@ def delete():
     if not exist:
         messagebox.showinfo("Erorr", "کاربری با این ایمل وجود ندارد")
     else:
-        sql = '''DELETE FROM user WHERE email=?'''
+        sql = """DELETE FROM user WHERE email=?"""
         c.execute(sql, (dele_email,))
 
         con.commit()
         con.close()
-        messagebox.showinfo("Warning", 'کابر مورد نظر حذف شد')
+        messagebox.showinfo("Warning", "کابر مورد نظر حذف شد")
         entry_count_dele.delete(0, END)
 
 
